@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Job Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="jobData"></div>
+
+<script src="api.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const jobId = params.get("id");
+
+  fetchJobs().then(jobs => {
+    const job = jobs.find(j => j.id === jobId);
+    const container = document.getElementById("jobData");
+
+    container.innerHTML = `
+      <h2>${job.name}</h2>
+      ${job.employees.map((emp, ei) => `
+        <h3>${emp.name}</h3>
+        <ul>
+          ${emp.tasks.map((t, ti) => `
+            <li style="color:${t.status === "complete" ? "green" : t.status === "paused" ? "red" : "black"};">
+              ${t.task}
+              <button onclick="updateTask('${job.id}', ${ei}, ${ti}, 'complete')">Complete</button>
+              <button onclick="pausePrompt('${job.id}', ${ei}, ${ti})">Pause</button>
+            </li>
+          `).join("")}
+        </ul>
+      `).join("")}
+    `;
+  });
+
+  function updateTask(job, e, t, status, notes="") {
+    updateTaskStatus(job, e, t, status, notes).then(()=>location.reload());
+  }
+
+  function pausePrompt(job, e, t) {
+    const reason = prompt("Why is this task paused?");
+    updateTaskStatus(job, e, t, "paused", reason).then(()=>location.reload());
+  }
+</script>
+</body>
+</html>

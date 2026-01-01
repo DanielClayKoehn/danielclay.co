@@ -1,4 +1,7 @@
-const API = "http://localhost:4000/api";
+const API =
+  window.location.hostname === "localhost"
+    ? "http://localhost:4000/api"
+    : "https://api.oiland.wine/api";
 
 export const fetchJobs = () =>
   fetch(`${API}/jobs`).then(res=>res.json());
@@ -9,3 +12,4 @@ export const updateTaskStatus = (jobId, emp, task, status, notes="") =>
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ status, notes })
   });
+
